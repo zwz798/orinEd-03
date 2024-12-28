@@ -1,9 +1,16 @@
-import { TreeView, FileSystemProvider } from "./tree";
+import { DefaultTreeDataProvider , TreeNode, TreeView} from "./myTree";
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // 渲染的容器
     const container = document.createElement('div');
-    document.body.appendChild(container);
-    
-    const fileSystemProvider = new FileSystemProvider('/root');
-    const treeView = new TreeView(container, fileSystemProvider);
+    document.body.appendChild(container)
+
+    const treeNode = await window.electronApi.readStat("/")
+    // 数据提供者
+    let treeDataProdiver = new DefaultTreeDataProvider(treeNode)
+    await treeDataProdiver.getChildren()
+    let treeView = new TreeView(treeDataProdiver)
+
+    // 开始渲染
+    treeView.renderRootView(container)
 });
