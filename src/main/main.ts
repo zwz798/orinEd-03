@@ -1,7 +1,7 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import * as path from 'path';
-import * as fs from 'fs/promises';
-import { TreeNode } from '../renderer/myTree';
+import { app, BrowserWindow, ipcMain } from 'electron'
+import * as path from 'path'
+import * as fs from 'fs/promises'
+import { TreeNode } from '../renderer/myTree'
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -12,33 +12,33 @@ function createWindow() {
             nodeIntegration: true,
             contextIsolation: true
         }
-    });
+    })
 
-    mainWindow.loadFile(path.join(__dirname, '../src/renderer/index.html'));
-    mainWindow.webContents.toggleDevTools();
+    mainWindow.loadFile(path.join(__dirname, '../src/renderer/index.html'))
+    mainWindow.webContents.toggleDevTools()
 }
 
 app.whenReady().then(() => {
-    createWindow();
+    createWindow()
 
     app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    });
-});
+        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
+})
 
 app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit();
-});
+    if (process.platform !== 'darwin') app.quit()
+})
 
 ipcMain.handle('readDirectory', async (_event, filePath: string) => {
     try {
-        const entries = await fs.readdir(filePath, { withFileTypes: true });
+        const entries = await fs.readdir(filePath, { withFileTypes: true })
         let treeNodes = entries.map(dirent => {
             return new TreeNode(dirent.path, dirent.name, dirent.isDirectory())
         })
-        return treeNodes;
+        return treeNodes
     } catch (error) {
-        return { error: error }; // 返回错误信息
+        return { error: error } // 返回错误信息
     }
 })
 

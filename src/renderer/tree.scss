@@ -1,0 +1,30 @@
+.tree {
+    background-color: #181818;
+    font-size: 13px;
+}
+
+.tree_node {
+    color: #CCCCCC;
+
+    &:hover {
+        cursor: pointer;
+        background-color: rgb(90, 86, 82);
+    }
+}
+
+.icon {
+    display: inline-block;
+    position: absolute;
+    top: 2px;
+    left: -20px;
+    height: 16px;
+    width: 16px;
+    line-height: 20px;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* 定义CSS类 */
+.hide-after-first>div:nth-child(n+2) {
+    display: none;
+}

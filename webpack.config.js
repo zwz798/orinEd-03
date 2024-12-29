@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = [
     // 配置 1: 主进程 (main)
@@ -7,18 +7,24 @@ module.exports = [
         entry: './src/main/main.ts',
         target: 'electron-main', // 主进程环境
         module: {
-            rules: [{
-                test: /\.ts$/,
-                include: /src/,
-                use: [{ loader: 'ts-loader' }]
-            }]
+            rules: [
+                {
+                    test: /\.ts$/,
+                    include: /src/,
+                    use: [{ loader: 'ts-loader' }]
+                },
+                {
+                    test: /\.(css|scss)$/,
+                    use: ['style-loader', 'css-loader', 'sass-loader']
+                }
+            ]
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
             filename: 'main.js'
         },
         resolve: {
-            extensions: ['.ts', '.js']
+            extensions: ['.ts', '.js', '.scss']
         }
     },
     // 配置 2: 渲染进程 (renderer)
@@ -27,18 +33,24 @@ module.exports = [
         entry: './src/renderer/renderer.ts',
         target: 'electron-renderer', // 渲染进程环境
         module: {
-            rules: [{
-                test: /\.ts$/,
-                include: /src/,
-                use: [{ loader: 'ts-loader' }]
-            }]
+            rules: [
+                {
+                    test: /\.ts$/,
+                    include: /src/,
+                    use: [{ loader: 'ts-loader' }]
+                },
+                {
+                    test: /\.(css|scss)$/,
+                    use: ['style-loader', 'css-loader', 'sass-loader']
+                }
+            ]
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
             filename: 'renderer.js'
         },
         resolve: {
-            extensions: ['.ts', '.js']
+            extensions: ['.ts', '.js', '.scss']
         }
     },
     // 配置 3: 预加载脚本 (preload)
@@ -47,11 +59,14 @@ module.exports = [
         entry: './src/renderer/preload.ts',
         target: 'electron-preload', // 预加载环境
         module: {
-            rules: [{
-                test: /\.ts$/,
-                include: /src/,
-                use: [{ loader: 'ts-loader' }]
-            }]
+            rules: [
+                {
+                    test: /\.ts$/,
+                    include: /src/,
+                    use: [{ loader: 'ts-loader' }]
+                },
+
+            ]
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
@@ -61,4 +76,4 @@ module.exports = [
             extensions: ['.ts', '.js']
         }
     }
-];
+]
