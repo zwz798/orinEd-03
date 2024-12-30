@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.appendChild(container)
 
     // 以 / 为根节点
-    const treeNode = await window.electronApi.readStat('/')
+    const treeNode = await window.electronApi.readStat('d:/')
 
     // 数据提供者
     let treeDataProdiver = new DefaultTreeDataProvider(treeNode)

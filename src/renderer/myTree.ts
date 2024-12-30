@@ -1,5 +1,6 @@
 import './tree.scss'
 import { getSuffix } from './CommonUtils'
+import { getIconPath } from './iconMap'
 
 export class TreeNode {
     path: string
@@ -41,6 +42,7 @@ export class DefaultTreeDataProvider implements ITreeDataProvider {
         }
 
         // 无节点，返回根目录的子节点
+        console.log(this.root.path)
         const treeNodes = await window.electronApi.readDirectory(this.root.path)
         this.root.children = treeNodes
         return treeNodes
@@ -89,10 +91,7 @@ export class TreeView {
     }
 
     private rendererTreeNode(treeNode: TreeNode, level: number): HTMLElement {
-        let iconPath = '../assets/icons/file_type_'
-        let suffix = getSuffix(treeNode.label)
-        iconPath = iconPath + suffix + '.svg'
-
+        let iconPath = getIconPath(treeNode)
         const treeNodeDiv = document.createElement('div')
         treeNodeDiv.className = "container"
         const div = document.createElement('div')
@@ -123,6 +122,8 @@ export class TreeView {
         div.appendChild(fileNameDiv)
 
         div.classList.add('tree_node')
+
+        
 
         div.addEventListener('click', async () => {
             if (treeNode.isDirectory) {
