@@ -1,19 +1,19 @@
-import { DefaultTreeDataProvider , TreeNode, TreeView} from './myTree'
+import { DefaultTreeDataProvider , TreeNode, DefaultTreeView} from './myTree'
 
 document.addEventListener('DOMContentLoaded', async () => {
-    // 渲染的容器
-    let container = document.createElement('div')
-    document.body.appendChild(container)
-
+    const path = "d:/"
     // 以 / 为根节点
-    const treeNode = await window.electronApi.readStat('/')
-
+    const stats = await window.electronApi.readStat(path)
+    const treeNode = new TreeNode(path, "", true, 0)
+    
     // 数据提供者
     let treeDataProdiver = new DefaultTreeDataProvider(treeNode)
     await treeDataProdiver.getChildren()
 
-    let treeView = new TreeView(treeDataProdiver, container)
+    let treeView = new DefaultTreeView(treeDataProdiver)
 
     // 开始渲染
     treeView.renderRootView()
+
+    document.body.appendChild(treeDataProdiver.getRoot().container) 
 })

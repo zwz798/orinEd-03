@@ -3,8 +3,16 @@
     font-size: 13px;
 }
 
+.file_name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 20px;
+}
+
 .tree_node {
     color: #CCCCCC;
+    align-items: center;
 
     &:hover {
         cursor: pointer;
@@ -13,18 +21,12 @@
 }
 
 .icon {
-    display: inline-block;
-    position: absolute;
-    top: 2px;
-    left: -20px;
+    flex-shrink: 0;
     height: 16px;
     width: 16px;
-    line-height: 20px;
-    font-size: 12px;
-    text-align: center;
+    margin-right: 5px;
 }
 
-/* 定义CSS类 */
 .hide-after-first>div:nth-child(n+2) {
     display: none;
 }
