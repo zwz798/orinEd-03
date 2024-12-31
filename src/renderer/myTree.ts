@@ -92,6 +92,7 @@ export class TreeView {
 
     private rendererTreeNode(treeNode: TreeNode, level: number): HTMLElement {
         let iconPath = getIconPath(treeNode)
+
         const treeNodeDiv = document.createElement('div')
         treeNodeDiv.className = "container"
         const div = document.createElement('div')
@@ -122,8 +123,6 @@ export class TreeView {
         div.appendChild(fileNameDiv)
 
         div.classList.add('tree_node')
-
-        
 
         div.addEventListener('click', async () => {
             if (treeNode.isDirectory) {
