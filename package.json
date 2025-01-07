@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "chokidar": "^4.0.3",
     "electron": "^33.2.1"
   },
   "devDependencies": {
