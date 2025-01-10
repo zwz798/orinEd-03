@@ -1,131 +1,28 @@
 import './tree.scss'
-import { getSuffix } from './CommonUtils'
-import { getIconPath } from './iconMap'
+import { getIconPath } from "../../iconMap"
+import { TreeNode, ITreeDataProvider } from "../treedata/TreeData"
 
-export class TreeNodeDTO {
-    path: string
-    label: string
-    isDirectory: boolean
-
-    constructor(path: string, label: string, isDirectory: boolean) {
-        this.path = path
-        this.label = label
-        this.isDirectory = isDirectory
-    }
-}
-
-export class TreeNode {
-    path: string
-    label: string
-    isDirectory: boolean
-    children: TreeNode[] = []
-    level: number
-    isLoaded: boolean = false
-    isExpanded: boolean = false
-    container: HTMLElement
-
-    icon?: string
-    parent?: TreeNode
-
-    constructor(path: string, label: string, isDirectory: boolean, level: number) {
-        this.path = path
-        this.label = label
-        this.isDirectory = isDirectory
-        this.level = level
-
-        this.container = document.createElement("div")
-    }
-
-    createContainer() {
-        if (!this.container) {
-            this.container = document.createElement("div")
-        }
-    }
-}
-
-export interface ITreeDataProvider {
-    getChildren(element?: TreeNode): Promise<TreeNode[]>
-    getRoot(): TreeNode
-}
-
-export class DefaultTreeDataProvider implements ITreeDataProvider {
-    constructor(private root: TreeNode) {
-        root.createContainer()
-     }
-
-    async getChildren(element?: TreeNode): Promise<TreeNode[]> {
-        try {
-            if (element) {
-                if (element.isDirectory) {
-                    const filePath = window.electronApi.join(element.path, element.label)
-                    const treeNodeDTOs = await window.electronApi.readDirectory1(filePath)
-                    const treeNodes = this.transferDTOs2TreeNodes(treeNodeDTOs, element.level + 1, element)
-
-                    element.children = treeNodes
-                    element.isLoaded = true
-                    return treeNodes
-                } else {
-                    return []
-                }
-            }
-
-            const filePath = window.electronApi.join(this.root.path, this.root.label)
-            const treeNodeDTOs = await window.electronApi.readDirectory1(filePath)
-
-            const treeNodes = this.transferDTOs2TreeNodes(treeNodeDTOs, 0)
-            this.root.children = treeNodes
-            return treeNodes
-        } catch(error) {
-            if (element) {
-                console.log(`获取 ${element} 的字节点的失败！ ${error}`)
-            } else {
-                console.log(`获取根节点 ${this.root} 的字节点的失败！ ${error}`)
-            }
-
-            return []
-        }
-    }
-
-    private transferDTOs2TreeNodes(treeNodeDTOs: TreeNodeDTO[], level: number, parent?: TreeNode): TreeNode[] {
-        const treeNodes = treeNodeDTOs.map(item => {
-            const treeNode = new TreeNode(item.path, item.label, item.isDirectory, level)
-            if (parent) treeNode.parent = parent
-            return treeNode
-        })
-
-        return treeNodes
-    }
-
-    getRoot(): TreeNode {
-        return this.root
-    }
-}
-
-export interface TreeView {
-    renderRootView(): void
+export interface ITreeView {
+    rendererRootView(): void
+    setTreeDataProvider(treeDataProdiver: ITreeDataProvider): void
     rendererTreeNode(treeNode: TreeNode): void
-    refresh(): void
 }
 
-export class DefaultTreeView implements TreeView {
-    constructor(private treeDataProvider: ITreeDataProvider) {
-        treeDataProvider.getRoot().container.classList.add("tree")
+export class DefaultTreeView implements ITreeView {
+    private treeDataProvider!: ITreeDataProvider
+    
+    setTreeDataProvider(treeDataProdiver: ITreeDataProvider): void {
+        this.treeDataProvider = treeDataProdiver
     }
 
-    refresh(): void {
-        throw new Error('Method not implemented.')
-    }
-
-    async renderRootView() {
+    async rendererRootView() {
         this.treeDataProvider.getRoot().container.innerHTML = ''
         await this.rendererTreeView(this.treeDataProvider.getRoot())
     }
 
     /**
      * 递归渲染树视图
-     * @param node 根节点
-     * @param html 在html下渲染
-     * @param level 节点的层级
+     * @param node 节点
      * @returns 
      */
     private async rendererTreeView(node: TreeNode) {

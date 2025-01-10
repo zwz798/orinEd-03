@@ -1,0 +1,22 @@
+import { ITreeDataProvider } from "./treedata/TreeData";
+import { ITreeView } from "./treeview/TreeView";
+
+export class TreeManager {
+    private treeView: ITreeView
+    private treeData: ITreeDataProvider
+
+    constructor(treeView: ITreeView, treeData: ITreeDataProvider) {
+        this.treeView = treeView
+        this.treeData = treeData
+    }
+
+    async initTreeView() {
+        this.treeView.setTreeDataProvider(this.treeData)
+        await this.treeData.getChildren()
+        this.treeView.rendererRootView()
+    }
+
+    getView(): HTMLElement {
+        return this.treeData.getRoot().container
+    }
+}

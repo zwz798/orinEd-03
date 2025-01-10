@@ -1,10 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import * as fs from 'fs/promises'
-import { TreeNode, TreeNodeDTO } from '../renderer/myTree'
-import * as chokidar from 'chokidar';
-import { resolve } from 'path';
-import * as os from 'os';
+import { TreeNode, TreeNodeDTO } from '../renderer/tree/treedata/TreeData'
+import { startWatch } from './watcher';
 
 
 function createWindow() {
@@ -28,24 +26,6 @@ app.whenReady().then(() => {
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
-
-    console.log(os.platform())
-
-    const watchDir = resolve("D:\\test"); // 请替换为你的目标目录
-
-    // 创建 watcher 实例，配置忽略 node_modules 目录
-    const watcher = chokidar.watch(watchDir, {
-        ignored: /node_modules/
-    });
-
-    // 监听各种事件
-    watcher
-        .on('add', path => console.log(`File ${path} has been added`))
-        .on('change', path => console.log(`File ${path} has been changed`))
-        .on('unlink', path => console.log(`File ${path} has been removed`))
-        .on('ready', () => console.log('Initial scan complete. Ready for changes.'))
-        .on('error', error => console.error('Error happened:', error));
-
 })
 
 app.on('window-all-closed', function () {
@@ -91,4 +71,8 @@ ipcMain.handle('readDirectory1', async (_event, filePath: string): Promise<TreeN
 
 ipcMain.handle('readStat', async (_event, filePath: string) => {
     return await fs.stat(filePath)
+})
+
+ipcMain.handle('watch', async(_event, filePath: string) => {
+    startWatch(filePath)   
 })

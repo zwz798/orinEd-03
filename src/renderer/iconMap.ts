@@ -1,4 +1,4 @@
-import { TreeNode } from "./myTree"
+import { TreeNode } from "./tree/treedata/TreeData"
 
 let iconExtensionMap: Map<String, string> = new Map()
 
