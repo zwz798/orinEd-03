@@ -10,14 +10,19 @@ export interface ITreeView {
 
 export class DefaultTreeView implements ITreeView {
     private treeDataProvider!: ITreeDataProvider
-    
+
     setTreeDataProvider(treeDataProdiver: ITreeDataProvider): void {
         this.treeDataProvider = treeDataProdiver
     }
 
     async rendererRootView() {
-        this.treeDataProvider.getRoot().container.innerHTML = ''
+        this.refreshRootContainer()
         await this.rendererTreeView(this.treeDataProvider.getRoot())
+    }
+
+    private refreshRootContainer() {
+        this.treeDataProvider.getRoot().container.innerHTML = ''
+        this.treeDataProvider.getRoot().container.classList.add("tree")
     }
 
     /**
