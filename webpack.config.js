@@ -1,11 +1,10 @@
 const path = require('path')
 
 module.exports = [
-    // 配置 1: 主进程 (main)
     {
         mode: 'development',
         entry: './src/main/main.ts',
-        target: 'electron-main', // 主进程环境
+        target: 'electron-main',
         module: {
             rules: [
                 {
@@ -27,11 +26,10 @@ module.exports = [
             extensions: ['.ts', '.js', '.scss']
         }
     },
-    // 配置 2: 渲染进程 (renderer)
     {
         mode: 'development',
         entry: './src/renderer/renderer.ts',
-        target: 'electron-renderer', // 渲染进程环境
+        target: 'electron-renderer',
         module: {
             rules: [
                 {
@@ -53,11 +51,10 @@ module.exports = [
             extensions: ['.ts', '.js', '.scss']
         }
     },
-    // 配置 3: 预加载脚本 (preload)
     {
         mode: 'development',
-        entry: './src/renderer/preload.ts',
-        target: 'electron-preload', // 预加载环境
+        entry: './src/preload/preload.ts',
+        target: 'electron-preload', 
         module: {
             rules: [
                 {
@@ -70,7 +67,7 @@ module.exports = [
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: 'preload.js' // 编译输出的 preload 文件
+            filename: 'preload.js' 
         },
         resolve: {
             extensions: ['.ts', '.js']

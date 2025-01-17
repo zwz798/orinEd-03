@@ -11,8 +11,8 @@ function createWindow() {
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, '/preload.js'),
-            nodeIntegration: true,
-            contextIsolation: true
+            nodeIntegration: false,
+            contextIsolation: false
         }
     })
 
@@ -73,6 +73,6 @@ ipcMain.handle('readStat', async (_event, filePath: string) => {
     return await fs.stat(filePath)
 })
 
-ipcMain.handle('watch', async(_event, filePath: string) => {
-    startWatch(filePath)   
+ipcMain.handle('watch', async (_event, filePath: string) => {
+    startWatch(filePath)
 })

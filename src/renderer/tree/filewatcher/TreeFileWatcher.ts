@@ -1,5 +1,6 @@
 interface TreeFileWatcher {
     watch(filePath: string): void
+    
 }
 
 export class DefaultTreeFileWatcher implements TreeFileWatcher {

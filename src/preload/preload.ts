@@ -1,6 +1,6 @@
-import { contextBridge, ipcMain, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import * as path from 'path'
-import { TreeNode, TreeNodeDTO } from './tree/treedata/TreeData'
+import { TreeNode, TreeNodeDTO } from '../renderer/tree/treedata/TreeData'
 
 export interface ElectronApi {
     readDirectory: (treeNode: TreeNode) => Promise<TreeNode[]> 
@@ -19,7 +19,6 @@ export interface Path {
     extname: (p: string) => string
     normalize: (p: string) => string
     relative: (from: string, to: string) => string
-
 }
 
 contextBridge.exposeInMainWorld('electronApi', {
