@@ -1,11 +1,11 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, IpcRenderer, ipcRenderer } from 'electron'
 import * as path from 'path'
 import { TreeNode, TreeNodeDTO } from '../renderer/tree/treedata/TreeData'
 
 export interface ElectronApi {
-    readDirectory: (treeNode: TreeNode) => Promise<TreeNode[]> 
+    readDirectory: (treeNode: TreeNode) => Promise<TreeNode[]>
     readDirectory1: (filePath: string) => Promise<TreeNodeDTO[]>
-    readStat: (filePath: string) => Promise<TreeNode>  
+    readStat: (filePath: string) => Promise<TreeNode>
     join: (...args: string[]) => string
     sep: string
     watch: (filePath: string) => void
@@ -36,3 +36,28 @@ declare global {
         electronApi: ElectronApi
     }
 }
+
+// 定义协议接口
+interface IFileSystemProtocol {
+    readDirectory(path: string): Promise<TreeNode[]>;
+    readStat(filePath: string): Promise<TreeNode>
+
+}
+
+// Protocol 层实现
+class FileSystemProtocol implements IFileSystemProtocol {
+    // 渲染进程中的实现
+    private ipcRenderer: IpcRenderer;
+
+    constructor() {
+        this.ipcRenderer = ipcRenderer;
+    }
+
+    async readDirectory(path: string): Promise<TreeNode[]> {
+        return await this.ipcRenderer.invoke('readDirectory', path);
+    }
+
+    async 
+
+}
+
