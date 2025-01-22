@@ -1,5 +1,5 @@
-import { ITreeDataProvider } from "./treedata/TreeData";
-import { ITreeView } from "./treeview/TreeView";
+import { ITreeDataProvider } from './treedata/TreeData'
+import { ITreeView } from './treeview/TreeView'
 
 export class TreeManager {
     private treeView: ITreeView

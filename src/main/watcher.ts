@@ -1,10 +1,10 @@
-import * as chokidar from 'chokidar';
+import * as chokidar from 'chokidar'
 
 export function startWatch(watchDir: string) {
     const watcher = chokidar.watch(watchDir, {
         ignored: /node_modules/,
         depth: 0
-    });
+    })
 
     watcher
         .on('add', path =>
@@ -21,14 +21,14 @@ export function startWatch(watchDir: string) {
         )
         .on('error', error =>
             console.error('Error happened:', error)
-        );
+        )
 }
 
 export function startWatch1(watchDir: string): chokidar.FSWatcher {
     const watcher = chokidar.watch(watchDir, {
         ignored: /node_modules/,
         depth: 0
-    });
+    })
 
     return watcher
 }

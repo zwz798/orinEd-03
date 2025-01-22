@@ -1,41 +1,7 @@
-export class TreeNodeDTO {
-    path: string
-    label: string
-    isDirectory: boolean
+import { FileSystemProtocol, IFileSystemProtocol } from '../../../preload/preload'
+import { CommonUtils } from '../../CommonUtils'
+import { TreeNode, TreeNodeDTO } from '../../../share/treeNode'
 
-    constructor(path: string, label: string, isDirectory: boolean) {
-        this.path = path
-        this.label = label
-        this.isDirectory = isDirectory
-    }
-}
-
-export class TreeNode {
-    path: string
-    label: string
-    isDirectory: boolean
-    children: TreeNode[] = []
-    level: number
-    isLoaded: boolean = false
-    isExpanded: boolean = false
-    container: HTMLElement
-
-    icon?: string
-    parent?: TreeNode
-
-    constructor(path: string, label: string, isDirectory: boolean, level: number) {
-        this.path = path
-        this.label = label
-        this.isDirectory = isDirectory
-        this.level = level
-
-        this.container = document.createElement("div")
-    }
-
-    getFullPath(): string {
-        return this.path + this.label
-    }
-}
 
 export interface ITreeDataProvider {
     getChildren(element?: TreeNode): Promise<TreeNode[]>
@@ -44,14 +10,20 @@ export interface ITreeDataProvider {
 }
 
 export class DefaultTreeDataProvider implements ITreeDataProvider {
-    constructor(private root: TreeNode) {}
+    private fileSystemProtocol: IFileSystemProtocol
+    private commonUtils: CommonUtils
+
+    constructor(private root: TreeNode) {
+        this.fileSystemProtocol = new FileSystemProtocol()
+        this.commonUtils = new CommonUtils()
+    }
 
     async getChildren(element?: TreeNode): Promise<TreeNode[]> {
         try {
             if (element) {
                 if (element.isDirectory) {
-                    const filePath = window.electronApi.join(element.path, element.label)
-                    const treeNodeDTOs = await window.electronApi.readDirectory1(filePath)
+                    const filePath = await this.fileSystemProtocol.join(element.path, element.label)
+                    const treeNodeDTOs = await this.fileSystemProtocol.readDirectory1(filePath)
                     const treeNodes = this.transferDTOs2TreeNodes(treeNodeDTOs, element.level + 1, element)
 
                     element.children = treeNodes
@@ -63,8 +35,8 @@ export class DefaultTreeDataProvider implements ITreeDataProvider {
             }
 
             // 获取根节点数据
-            const filePath = window.electronApi.join(this.root.path, this.root.label)
-            const treeNodeDTOs = await window.electronApi.readDirectory1(filePath)
+            const filePath = await this.fileSystemProtocol.join(this.root.path, this.root.label)
+            const treeNodeDTOs = await this.fileSystemProtocol.readDirectory1(filePath)
 
             const treeNodes = this.transferDTOs2TreeNodes(treeNodeDTOs, 0)
             this.root.children = treeNodes
@@ -105,15 +77,12 @@ export class DefaultTreeDataProvider implements ITreeDataProvider {
     }
 
     private findNodeByPath(path: string, node: TreeNode): TreeNode | undefined {
-        const sep = window.electronApi.sep
+        let sep = this.commonUtils.getSep()
         let splits = path.split(sep) 
-        console.log(splits)
-        
         let curNode: TreeNode | undefined = node
-
         for (let i = 0; i < splits.length - 1; i++) {
             let filePath = splits[i] + sep + splits[i+1]
-            curNode = curNode?.children.find(node => node.getFullPath() === filePath);
+            curNode = curNode?.children.find(node => node.getFullPath() === filePath)
             if (!curNode) {
                 break
             }
@@ -123,4 +92,3 @@ export class DefaultTreeDataProvider implements ITreeDataProvider {
     }
 
 }
-

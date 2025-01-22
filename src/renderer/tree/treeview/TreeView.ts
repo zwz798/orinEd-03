@@ -1,6 +1,7 @@
 import './tree.scss'
-import { getIconPath } from "../../iconMap"
-import { TreeNode, ITreeDataProvider } from "../treedata/TreeData"
+import { getIconPath } from '../../iconMap'
+import { ITreeDataProvider } from '../treedata/TreeData'
+import { TreeNode } from '../../../share/treeNode'
 
 export interface ITreeView {
     rendererRootView(): void
@@ -22,7 +23,7 @@ export class DefaultTreeView implements ITreeView {
 
     private refreshRootContainer() {
         this.treeDataProvider.getRoot().container.innerHTML = ''
-        this.treeDataProvider.getRoot().container.classList.add("tree")
+        this.treeDataProvider.getRoot().container.classList.add('tree')
     }
 
     /**
@@ -49,10 +50,10 @@ export class DefaultTreeView implements ITreeView {
     rendererTreeNode(treeNode: TreeNode): HTMLElement {
         // 容器
         const treeNodeDiv = document.createElement('div')
-        treeNodeDiv.style.display = "flex"
+        treeNodeDiv.style.display = 'flex'
         // 文件名
         const fileNameDiv = document.createElement('div')
-        fileNameDiv.classList.add("file_name")
+        fileNameDiv.classList.add('file_name')
         fileNameDiv.innerText = treeNode.label
         // 图标
         const icon = document.createElement('div')

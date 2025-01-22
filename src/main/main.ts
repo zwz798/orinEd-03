@@ -1,9 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import * as fs from 'fs/promises'
-import { TreeNode, TreeNodeDTO } from '../renderer/tree/treedata/TreeData'
-import { startWatch } from './watcher';
-
+import { TreeNode, TreeNodeDTO } from '../share/treeNode'
+// import { startWatch } from './watcher'
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -12,7 +11,7 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, '/preload.js'),
             nodeIntegration: false,
-            contextIsolation: false
+            contextIsolation: true
         }
     })
 
@@ -73,6 +72,14 @@ ipcMain.handle('readStat', async (_event, filePath: string) => {
     return await fs.stat(filePath)
 })
 
-ipcMain.handle('watch', async (_event, filePath: string) => {
-    startWatch(filePath)
+// ipcMain.handle('watch', async (_event, filePath: string) => {
+//     startWatch(filePath)
+// })
+
+ipcMain.handle('join', (_event, ...paths: string[]) => {
+    return path.join(...paths)
+})
+
+ipcMain.handle('getSep', (_event) => {
+    return path.sep
 })

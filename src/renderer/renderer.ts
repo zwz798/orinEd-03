@@ -1,10 +1,13 @@
-import { DefaultTreeDataProvider, TreeNode, } from './tree/treedata/TreeData'
+import { DefaultTreeDataProvider } from './tree/treedata/TreeData'
+import { TreeNode } from '../share/treeNode'
 import { DefaultTreeView } from './tree/treeview/TreeView'
 import { TreeManager } from './tree/TreeManager'
 
+console.log("renderer start......")
+
 document.addEventListener('DOMContentLoaded', async () => {
-    const path = "D:\\"
-    const treeNode = new TreeNode(path, "", true, 0)
+    const path = 'D:\\'
+    const treeNode = new TreeNode(path, '', true, 0)
 
     let treeView = new DefaultTreeView()
     let treeDataProdiver = new DefaultTreeDataProvider(treeNode)

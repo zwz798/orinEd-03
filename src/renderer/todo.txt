@@ -31,10 +31,6 @@
 
 3.添加文件 ？
 
-
-
-
-
 1.fileWatcher在哪里调用
 2.filewatcher的回调函数怎么调用dataProdiver和treeView
 3.dataProdiver和treeView都要放在渲染进程吗？很不方便

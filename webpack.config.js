@@ -11,10 +11,6 @@ module.exports = [
                     test: /\.ts$/,
                     include: /src/,
                     use: [{ loader: 'ts-loader' }]
-                },
-                {
-                    test: /\.(css|scss)$/,
-                    use: ['style-loader', 'css-loader', 'sass-loader']
                 }
             ]
         },
@@ -23,7 +19,7 @@ module.exports = [
             filename: 'main.js'
         },
         resolve: {
-            extensions: ['.ts', '.js', '.scss']
+            extensions: ['.ts', '.js']
         }
     },
     {
