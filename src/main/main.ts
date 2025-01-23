@@ -53,6 +53,7 @@ ipcMain.handle('readDirectory', async (_event, treeNode: TreeNode) => {
         treeNode.children = treeNodes
         return treeNodes
     } catch (error) {
+        console.log(error)
         return treeNode
     }
 })
@@ -66,6 +67,7 @@ ipcMain.handle('readDirectory1', async (_event, filePath: string): Promise<TreeN
 
         return treeNodeDTOs
     } catch (error) {
+        console.log(error)
         return []
     }
 })

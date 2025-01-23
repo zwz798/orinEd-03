@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = [
     {
@@ -77,4 +77,4 @@ module.exports = [
             electron: 'commonjs electron', // 避免打包 electron 模块
         }
     }
-];
+]

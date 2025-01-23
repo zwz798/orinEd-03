@@ -12,7 +12,7 @@ export class TreeManager {
 
     async initTreeView() {
         this.treeView.setTreeDataProvider(this.treeData)
-        let treeNodes = await this.treeData.getChildren()
+        await this.treeData.getChildren()
         // 获取的节点都添加到监听
 
         this.treeView.rendererRootView()
