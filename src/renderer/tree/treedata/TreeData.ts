@@ -1,45 +1,62 @@
-import { FileSystemProtocol, IFileSystemProtocol } from '../../../preload/preload'
-import { CommonUtils } from '../../CommonUtils'
 import { TreeNode, TreeNodeDTO } from '../../../share/treeNode'
-
 
 export interface ITreeDataProvider {
     getChildren(element?: TreeNode): Promise<TreeNode[]>
     getRoot(): TreeNode
     removeTreeNode(path: string): void
+    watch(nodeList: TreeNode[]): void
+    watchOne(treeNode: TreeNode): void
+    onFileChanged(): void
 }
 
 export class DefaultTreeDataProvider implements ITreeDataProvider {
-    private fileSystemProtocol: IFileSystemProtocol
-    private commonUtils: CommonUtils
+    constructor(private root: TreeNode) {}
 
-    constructor(private root: TreeNode) {
-        this.fileSystemProtocol = new FileSystemProtocol()
-        this.commonUtils = new CommonUtils()
+    onFileChanged(): void {
+        window.electronApi.onFileChanged((path, type) => {
+            console.log(`${path} 已改变,类型为 ${type}`)
+        })
+    }
+
+    watchOne(treeNode: TreeNode): void {
+        window.electronApi.watch(treeNode.getFullPath())
+    }
+
+    watch(nodeList: TreeNode[]): void {
+        for (const node of nodeList) {
+            this.watchOne(node)
+        }
     }
 
     async getChildren(element?: TreeNode): Promise<TreeNode[]> {
         try {
             if (element) {
                 if (element.isDirectory) {
-                    const filePath = await this.fileSystemProtocol.join(element.path, element.label)
-                    const treeNodeDTOs = await this.fileSystemProtocol.readDirectory1(filePath)
+                    // 监听该目录
+                    this.watchOne(element)
+
+                    const filePath = await window.electronApi.join(element.path, element.label)
+                    const treeNodeDTOs = await window.electronApi.readDirectory1(filePath)
                     const treeNodes = this.transferDTOs2TreeNodes(treeNodeDTOs, element.level + 1, element)
 
                     element.children = treeNodes
                     element.isLoaded = true
+
                     return treeNodes
                 } else {
                     return []
                 }
             }
 
-            // 获取根节点数据
-            const filePath = await this.fileSystemProtocol.join(this.root.path, this.root.label)
-            const treeNodeDTOs = await this.fileSystemProtocol.readDirectory1(filePath)
+            // 监听根目录
+            this.watchOne(this.root)
 
+            // 获取根节点数据
+            const filePath = await window.electronApi.join(this.root.path, this.root.label)
+            const treeNodeDTOs = await window.electronApi.readDirectory1(filePath)
             const treeNodes = this.transferDTOs2TreeNodes(treeNodeDTOs, 0)
             this.root.children = treeNodes
+
             return treeNodes
         } catch (error) {
             if (element) {
@@ -77,7 +94,8 @@ export class DefaultTreeDataProvider implements ITreeDataProvider {
     }
 
     private findNodeByPath(path: string, node: TreeNode): TreeNode | undefined {
-        let sep = this.commonUtils.getSep()
+        // let sep = window.electronApi.getSep()
+        let sep = '\\'
         let splits = path.split(sep) 
         let curNode: TreeNode | undefined = node
         for (let i = 0; i < splits.length - 1; i++) {

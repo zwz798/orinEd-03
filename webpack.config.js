@@ -1,4 +1,4 @@
-const path = require('path')
+const path = require('path');
 
 module.exports = [
     {
@@ -20,6 +20,9 @@ module.exports = [
         },
         resolve: {
             extensions: ['.ts', '.js']
+        },
+        externals: {
+            electron: 'commonjs electron', // 避免打包 electron 模块
         }
     },
     {
@@ -45,28 +48,33 @@ module.exports = [
         },
         resolve: {
             extensions: ['.ts', '.js', '.scss']
+        },
+        externals: {
+            electron: 'commonjs electron', // 避免打包 electron 模块
         }
     },
     {
         mode: 'development',
         entry: './src/preload/preload.ts',
-        target: 'electron-preload', 
+        target: 'electron-preload',
         module: {
             rules: [
                 {
                     test: /\.ts$/,
                     include: /src/,
                     use: [{ loader: 'ts-loader' }]
-                },
-
+                }
             ]
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: 'preload.js' 
+            filename: 'preload.js'
         },
         resolve: {
             extensions: ['.ts', '.js']
+        },
+        externals: {
+            electron: 'commonjs electron', // 避免打包 electron 模块
         }
     }
-]
+];

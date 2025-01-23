@@ -2,10 +2,17 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import * as fs from 'fs/promises'
 import { TreeNode, TreeNodeDTO } from '../share/treeNode'
-// import { startWatch } from './watcher'
+import { startWatch } from './watcher'
+
+export let mainWindow: BrowserWindow 
 
 function createWindow() {
-    const mainWindow = new BrowserWindow({
+    mainWindow.loadFile(path.join(__dirname, '../src/renderer/index.html'))
+    mainWindow.webContents.toggleDevTools()
+}
+
+app.whenReady().then(() => {
+    mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
@@ -15,11 +22,6 @@ function createWindow() {
         }
     })
 
-    mainWindow.loadFile(path.join(__dirname, '../src/renderer/index.html'))
-    mainWindow.webContents.toggleDevTools()
-}
-
-app.whenReady().then(() => {
     createWindow()
 
     app.on('activate', function () {
@@ -72,14 +74,14 @@ ipcMain.handle('readStat', async (_event, filePath: string) => {
     return await fs.stat(filePath)
 })
 
-// ipcMain.handle('watch', async (_event, filePath: string) => {
-//     startWatch(filePath)
-// })
-
 ipcMain.handle('join', (_event, ...paths: string[]) => {
     return path.join(...paths)
 })
 
 ipcMain.handle('getSep', (_event) => {
     return path.sep
+})
+
+ipcMain.handle('watch', (_event, watchDir: string) => {
+    startWatch(watchDir)
 })

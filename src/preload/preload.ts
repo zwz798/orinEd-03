@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { TreeNode, TreeNodeDTO } from '../share/treeNode'
+import { FileChangeType } from '../share/fileChangeType'
 
 declare global {
     interface Window {
@@ -14,6 +15,7 @@ export interface ElectronApi {
     watch: (filePath: string) => void
     join: (...args: string[]) => Promise<string>
     getSep: () => Promise<string>
+    onFileChanged: (callback: (path: string, type: FileChangeType) => void) => void
 }
 
 contextBridge.exposeInMainWorld('electronApi', {
@@ -22,8 +24,16 @@ contextBridge.exposeInMainWorld('electronApi', {
     readStat: (filePath: string) => ipcRenderer.invoke('readStat', filePath),
     watch: (filePath: string) => ipcRenderer.invoke('watch', filePath),
     join: (...args: string[]) => ipcRenderer.invoke('join', ...args),
-    getSep: () => ipcRenderer.invoke('getSep')
+    getSep: () => ipcRenderer.invoke('getSep'),
+    onFileChanged: (callback: (path: string, type: FileChangeType) => void) => {
+        ipcRenderer.on('file-changed', (event, changedPath, type) => callback(changedPath, type))
+    }
 } as ElectronApi)
+
+
+
+
+
 
 // 文件系统协议
 export interface IFileSystemProtocol {
@@ -35,7 +45,6 @@ export interface IFileSystemProtocol {
 }
 
 export class FileSystemProtocol implements IFileSystemProtocol {
-
     async readDirectory(treeNode: TreeNode): Promise<TreeNode[]> {
         return await window.electronApi.readDirectory(treeNode)
     }
@@ -56,4 +65,3 @@ export class FileSystemProtocol implements IFileSystemProtocol {
         return await window.electronApi.getSep()
     }
 }
-

@@ -1,6 +1,9 @@
 import * as chokidar from 'chokidar'
+import { mainWindow } from './main'
+import { FileChangeType } from '../share/fileChangeType'
 
 export function startWatch(watchDir: string) {
+    console.log(`startWatch: ${watchDir}`)
     const watcher = chokidar.watch(watchDir, {
         ignored: /node_modules/,
         depth: 0
@@ -8,16 +11,16 @@ export function startWatch(watchDir: string) {
 
     watcher
         .on('add', path =>
-            console.log(`File ${path} has been added`)
+            mainWindow.webContents.send('file-changed', path, FileChangeType.add)
         )
         .on('change', path =>
-            console.log(`File ${path} has been changed`)
+            mainWindow.webContents.send('file-changed', path, FileChangeType.change)
         )
         .on('unlink', path =>
-            console.log(`File ${path} has been removed`)
+            mainWindow.webContents.send('file-changed', path, FileChangeType.unlink)
         )
         .on('ready', () =>
-            console.log('Initial scan complete. Ready for changes.')
+            console.log()
         )
         .on('error', error =>
             console.error('Error happened:', error)
