@@ -3,14 +3,34 @@ import { getIconPath } from '../../iconMap'
 import { ITreeDataProvider } from '../treedata/TreeData'
 import { TreeNode } from '../../../share/treeNode'
 
-export interface ITreeView {
-    rendererRootView(): void
-    setTreeDataProvider(treeDataProdiver: ITreeDataProvider): void
-    rendererTreeNode(treeNode: TreeNode): void
+class FileSvg {
+    static defaultFileSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_file</title><path d="M20.414,2H5V30H27V8.586ZM7,28V4H19v6h6V28Z" style="fill:#c5c5c5"/></svg>'
+    static defaultFolderSvg: string = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_folder</title><path d="M27.5,5.5H18.2L16.1,9.7H4.4V26.5H29.6V5.5Zm0,4.2H19.3l1.1-2.1h7.1Z" style="fill:#c09553"/></svg>'
+    static defaultFolderOpenSvg: string = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_folder_opened</title><path d="M27.4,5.5H18.2L16.1,9.7H4.3V26.5H29.5V5.5Zm0,18.7H6.6V11.8H27.4Zm0-14.5H19.2l1-2.1h7.1V9.7Z" style="fill:#dcb67a"/><polygon points="25.7 13.7 0.5 13.7 4.3 26.5 29.5 26.5 25.7 13.7" style="fill:#dcb67a"/></svg>'
 }
 
-export class DefaultTreeView implements ITreeView {
+export interface ITreeView {
+    // 渲染根视图
+    rendererRootView(): void
+    // 设置数据提供者
+    setTreeDataProvider(treeDataProdiver: ITreeDataProvider): void
+    // 渲染某个节点
+    rendererTreeNode(treeNode: TreeNode): void
+    // 添加某个节点视图
+    addTreeNodeView(treeNode: TreeNode): void
+    // 删除某个节点视图
+    removeTreeNodeView(treeNode: TreeNode): void
+}
+
+export class DefaultTreeView implements ITreeView {             
     private treeDataProvider!: ITreeDataProvider
+
+    addTreeNodeView(treeNode: TreeNode): void {
+        throw new Error('Method not implemented.')
+    }
+    removeTreeNodeView(treeNode: TreeNode): void {
+        throw new Error('Method not implemented.')
+    }
 
     setTreeDataProvider(treeDataProdiver: ITreeDataProvider): void {
         this.treeDataProvider = treeDataProdiver
@@ -63,14 +83,13 @@ export class DefaultTreeView implements ITreeView {
         let iconPath = getIconPath(treeNode)
 
         if (treeNode.isDirectory) {
-            icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_folder</title><path d="M27.5,5.5H18.2L16.1,9.7H4.4V26.5H29.6V5.5Zm0,4.2H19.3l1.1-2.1h7.1Z" style="fill:#c09553"/></svg>'
+            icon.innerHTML = FileSvg.defaultFolderSvg
         } else {
             fetch(iconPath)
                 .then(res => res.text())
                 .then(svgText => icon.innerHTML = svgText)
                 .catch(error => {
-                    console.log(error)
-                    icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_file</title><path d="M20.414,2H5V30H27V8.586ZM7,28V4H19v6h6V28Z" style="fill:#c5c5c5"/></svg>'
+                    icon.innerHTML = FileSvg.defaultFileSvg
                 })
         }
 
@@ -78,16 +97,15 @@ export class DefaultTreeView implements ITreeView {
         treeNodeDiv.appendChild(fileNameDiv)
 
         treeNodeDiv.classList.add('tree_node')
-
         treeNodeDiv.addEventListener('click', async () => {
             if (treeNode.isDirectory) {
                 // 如果被展开,则关闭
                 if (treeNode.isExpanded) {
-                    icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_folder</title><path d="M27.5,5.5H18.2L16.1,9.7H4.4V26.5H29.6V5.5Zm0,4.2H19.3l1.1-2.1h7.1Z" style="fill:#c09553"/></svg>'
+                    icon.innerHTML = FileSvg.defaultFolderSvg
                     this.closeFolder(treeNode.container)
                     treeNode.isExpanded = false
                 } else {
-                    icon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><title>default_folder_opened</title><path d="M27.4,5.5H18.2L16.1,9.7H4.3V26.5H29.5V5.5Zm0,18.7H6.6V11.8H27.4Zm0-14.5H19.2l1-2.1h7.1V9.7Z" style="fill:#dcb67a"/><polygon points="25.7 13.7 0.5 13.7 4.3 26.5 29.5 26.5 25.7 13.7" style="fill:#dcb67a"/></svg>'
+                    icon.innerHTML = FileSvg.defaultFolderOpenSvg
                     this.openFolder(treeNode.container)
                     treeNode.isExpanded = true
                     // 展开文件夹需要加载数据，然后渲染子文件
@@ -99,7 +117,6 @@ export class DefaultTreeView implements ITreeView {
                 }
             } else {
                 // 打开文件
-
             }
         })
 

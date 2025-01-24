@@ -6,7 +6,11 @@ export function startWatch(watchDir: string) {
     console.log(`startWatch: ${watchDir}`)
     const watcher = chokidar.watch(watchDir, {
         ignored: /node_modules/,
-        depth: 0
+        depth: 0,
+        awaitWriteFinish: {
+            stabilityThreshold: 200, // 文件稳定时间（毫秒）
+            pollInterval: 100,       // 检查间隔
+        },
     })
 
     watcher

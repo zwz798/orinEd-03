@@ -1,20 +1,45 @@
+import { FileChangeType } from '../../../share/fileChangeType'
 import { TreeNode, TreeNodeDTO } from '../../../share/treeNode'
 
 export interface ITreeDataProvider {
+    // 获取节点的子节点，不传则获取根节点的字节点
     getChildren(element?: TreeNode): Promise<TreeNode[]>
+    // 获取根节点
     getRoot(): TreeNode
+    // 移除根节点
     removeTreeNode(path: string): void
+    // 增加节点
+    addTreeNode(treeNode: TreeNode): void
+    // 监听节点
     watch(nodeList: TreeNode[]): void
+    // 监听节点
     watchOne(treeNode: TreeNode): void
+    // 监听回调
     onFileChanged(): void
 }
 
 export class DefaultTreeDataProvider implements ITreeDataProvider {
-    constructor(private root: TreeNode) {}
+    constructor(private root: TreeNode) { }
+
+    addTreeNode(treeNode: TreeNode): void {
+        throw new Error('Method not implemented.')
+    }
 
     onFileChanged(): void {
         window.electronApi.onFileChanged((path, type) => {
-            console.log(`${path} 已改变,类型为 ${type}`)
+            switch (type) {
+                case FileChangeType.add:
+                    console.log(`${path} 被添加`)
+                // case FileChangeType.change:
+                //     console.log(`${path} 被修改`)
+                case FileChangeType.unlink:
+                    console.log(`${path} 失去关联`)
+                // case FileChangeType.ready:
+                //     console.log(`${path} ready`)
+                case FileChangeType.error:
+                    console.log(`${path} 监听报错`)
+            }
+
         })
     }
 
@@ -96,10 +121,10 @@ export class DefaultTreeDataProvider implements ITreeDataProvider {
     private findNodeByPath(path: string, node: TreeNode): TreeNode | undefined {
         // let sep = window.electronApi.getSep()
         let sep = '\\'
-        let splits = path.split(sep) 
+        let splits = path.split(sep)
         let curNode: TreeNode | undefined = node
         for (let i = 0; i < splits.length - 1; i++) {
-            let filePath = splits[i] + sep + splits[i+1]
+            let filePath = splits[i] + sep + splits[i + 1]
             curNode = curNode?.children.find(node => node.getFullPath() === filePath)
             if (!curNode) {
                 break
